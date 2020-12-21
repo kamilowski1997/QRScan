@@ -1,6 +1,6 @@
-import React, {Component, PermissionsAndroid, useRef} from 'react';
+import React, {Component, useRef} from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { StyleSheet, View, SafeAreaView, Text, Alert, TouchableOpacity, ToastAndroid } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Text, Alert, TouchableOpacity, ToastAndroid, PermissionsAndroid } from 'react-native';
 import CameraRoll from "@react-native-community/cameraroll";
 
 
@@ -10,6 +10,7 @@ import RNFS from "react-native-fs"
 
 export default class GeneratorScreen extends Component {
   svg;
+  hasWritePermissions;
   constructor(props) {
     super(props);
     this.state = {
@@ -18,106 +19,86 @@ export default class GeneratorScreen extends Component {
       QRdata : null,
       fileName : null,
     };
-    //this.saveQrToDisk = this.saveQrToDisk.bind(this);
   }
-
-  
-
-  saveQrToDisk (){
-    
-    this.svg.toDataURL((data) => {
-      RNFS.writeFile(RNFS.CachesDirectoryPath+"/some-name.png", data, 'base64')
-        .then((success) => {
-          return CameraRoll.save(RNFS.CachesDirectoryPath+"/some-name.png", 'photo')
+  saveQrToDisk = async() =>{
+    await this.requestWritePermission();
+    if(this.state.fileName==null){
+      ToastAndroid.show('Name your file.', ToastAndroid.SHORT)
+    }else{
+      if(this.svg!=undefined&&this.hasWritePermissions){
+        this.svg.toDataURL((data) => {
+          RNFS.writeFile(RNFS.CachesDirectoryPath+"/"+this.state.fileName+".png", data, 'base64')
+            .then((success) => {
+              return CameraRoll.save(RNFS.CachesDirectoryPath+"/"+this.state.fileName+".png", 'photo')
+            })
+            .then(() => {
+              ToastAndroid.show('Saved to gallery !!', ToastAndroid.SHORT)
+            })
         })
-        .then(() => {
-          ToastAndroid.show('Saved to gallery !!', ToastAndroid.SHORT)
-        })
-    })
-  }
+      }
+    }
+  };
 
+  requestWritePermission = async () =>{
+    const writePermissionResult = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    );
+    if (typeof writePermissionResult === 'boolean') {
+      this.hasWritePermissions = writePermissionResult;
+    } else {
+      this.hasWritePermissions = writePermissionResult === PermissionsAndroid.RESULTS.GRANTED;
+    }
+  };
 
   render() {
     const { navigation } = this.props;  
-    let svg={};
     
     if(this.state.QRdata!=null&&this.state.QRdata.length>0){
-      return (
-        <View
-        style={{
-          flex: 1,
-          //justifyContent: "space-between",
-          //alignItems: "center",
-          margin: 5
-        }}>
-          <TextInput 
-            onChangeText={(QRdata) => {
-              this.setState({QRdata})}}
-              mode='outlined' label="qr"
-            
-          />
-          <TextInput 
-            onChangeText={(fileName) => {
-              this.setState({fileName})} }
-              mode='outlined' label="file name"
-            
-          />
-
-          <View >
-
-            <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 15}}>
-              Save to Gallery
-            </Button>
-              
-          </View>
-      
-          <View style={{alignItems: "center", margin: 5}}>
-            <QRCode
-            value={this.state.QRdata}
-            size={250}
-            getRef={(ref) => (this.svg = ref)}
-            />
-          </View>
-        </View>
-    );
+      area= (
+      <View style={{alignItems: "center", margin: 5}}>
+        <QRCode
+        value={this.state.QRdata}
+        size={250}
+        getRef={(ref) => (this.svg = ref)}
+        />
+      </View>)
     
     }else{
-        return(
-        <View style={{
-          flex: 1,
-          //justifyContent: "space-between",
-          //alignItems: "center",
-        }}>
-          <TextInput 
+        area =(<View></View>)
+    }
+
+    return (
+      <View
+        style={{
+        flex: 1,
+        //justifyContent: "space-between",
+        //alignItems: "center",
+        margin: 5
+      }}>
+        <TextInput 
           onChangeText={(QRdata) => {
             this.setState({QRdata})}}
-            mode='outlined' label="qr"
-            style={{margin: 5}}
+            mode='outlined' label="qr data"
           
         />
         <TextInput 
           onChangeText={(fileName) => {
             this.setState({fileName})} }
             mode='outlined' label="file name"
-            style={{margin: 5}}
           
         />
 
         <View >
 
-          <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 7}}>
+          <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 15}}>
             Save to Gallery
           </Button>
             
         </View>
-     
-        </View>
-        )
-      
-    }
-    
+        {area}
+        
+      </View>
+  );
   }
-  
-
   
 }

@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import {RNCamera} from 'react-native-camera';
 import { Text, View, SafeAreaView, StyleSheet, Alert } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
-import { Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
-
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Camera extends Component {
   state = {
@@ -39,7 +37,7 @@ export default class Camera extends Component {
     return (
       <View style={{flex: 1, flexDirection: 'column', backgroundColor: 'black',}}>
         <RNCamera
-          onTap={this.flashOnTap}
+          onTap={this.changeCameraType}
           ref={ref => {
             this.camera = ref;
           }}
@@ -57,38 +55,61 @@ export default class Camera extends Component {
           onGoogleVisionBarcodesDetected={({ barcodes }) => {
             barcodes.forEach(barcode =>{
               if(barcode.type=="QR_CODE" && !this.state.scanned){
-                this.writeToClipboard(barcode.data, navigation);
+                this.saveToHistory(barcode.data);
+                this.codeDetected(barcode.data, navigation);
+
               }
             })
           }}
         />
+        
       </View>
     );
   }
-  writeToClipboard = async (text, navigation) => {
-    await Clipboard.setString(text);
+  codeDetected = async (qrData, navigation) => {
     this.setState({scanned:true});
     Alert.alert(
       "Alert",
-      `Copied ${text} to Clipboard!`,
+      `QR code data: ${qrData}`,
+     
       [
         {
-          text: "Ok",
-          onPress: () => {
+          text: "Save to Clipboard",
+          onPress: async () => {
+            await Clipboard.setString(qrData);
+    
             this.setState({scanned:false});
           }
         },
         {
-          text: "to the other side",
+          text: "Open in browser",
           onPress: () => {
             
-            {navigation.navigate('Webview', {text})}
+            {navigation.navigate('Webview', {qrData})}
             this.setState({scanned:false});
           }
-        }
+        },
+        {
+          text: "Ok",
+          onPress: () => { 
+            this.setState({scanned:false});
+          }
+        },  
       ],
 
       { cancelable: false }
     );
   };
+
+  saveToHistory = async(qrData) => {
+    let key = new Date().toLocaleString();
+    try{
+        await AsyncStorage.setItem(key, JSON.stringify(qrData))
+        //alert('Card added')
+
+    }catch (e){
+        console.log(e)
+    }
+ 
+  }
 }

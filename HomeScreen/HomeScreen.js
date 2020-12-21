@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Button } from 'react-native-paper';
-import { StyleSheet, View, SafeAreaView, Text, Alert, TouchableOpacity } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { StyleSheet, View, Text } from 'react-native';
+
 
 
 
@@ -23,10 +23,12 @@ export default class HomeScreen extends Component {
 
         <View>
 
-          <Button onPress={() => {navigation.navigate('GeneratorScreen')}} icon="qrcode-plus" mode='contained' contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}}>
+          <Button onPress={() => {navigation.navigate('GeneratorScreen')}} mode='contained' icon="qrcode-plus" contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}}>
             Generate QR CODE
           </Button>
         </View>
+
+        
       </View>
     )
   }

@@ -11,6 +11,8 @@ import HomeScreen from './HomeScreen/HomeScreen'
 import Camera from './Camera/Camera';
 import GeneratorScreen from './GeneratorScreen/GeneratorScreen';
 import WebViewThatOpensLinksInNavigator from './webview/webview'
+import History from './History/History';
+
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,7 @@ const App = () => {
           <Stack.Screen name="Camera" component={Camera} />
           <Stack.Screen name="GeneratorScreen" component={GeneratorScreen} />
           <Stack.Screen name="Webview" component={WebViewThatOpensLinksInNavigator} />
+          <Stack.Screen name="History" component={History}/>
         </Stack.Navigator>
       </PaperProvider>
     </NavigationContainer>
