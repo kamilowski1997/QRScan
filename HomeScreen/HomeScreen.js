@@ -16,14 +16,14 @@ export default class HomeScreen extends Component {
 
         <View>
 
-          <Button onPress={() => {navigation.navigate('Camera')}} mode='contained' materialIcon="CropFree"  contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}} >
+          <Button onPress={() => {navigation.navigate('Camera')}} mode='contained' icon="qrcode-scan"  contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}} >
             Scan
           </Button>
         </View>
 
         <View>
 
-          <Button onPress={() => {navigation.navigate('GeneratorScreen')}} mode='contained' contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}}>
+          <Button onPress={() => {navigation.navigate('GeneratorScreen')}} icon="qrcode-plus" mode='contained' contentStyle={{height: 150, width: 300}} labelStyle={{fontSize:25}}>
             Generate QR CODE
           </Button>
         </View>

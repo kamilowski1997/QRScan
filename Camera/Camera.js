@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import {RNCamera} from 'react-native-camera';
 import { Text, View, SafeAreaView, StyleSheet, Alert } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
+import { Linking } from 'react-native';
+import { WebView } from 'react-native-webview';
+
 
 export default class Camera extends Component {
   state = {
@@ -32,6 +35,7 @@ export default class Camera extends Component {
     } 
   };
    render() {
+    const { navigation } = this.props;
     return (
       <View style={{flex: 1, flexDirection: 'column', backgroundColor: 'black',}}>
         <RNCamera
@@ -53,7 +57,7 @@ export default class Camera extends Component {
           onGoogleVisionBarcodesDetected={({ barcodes }) => {
             barcodes.forEach(barcode =>{
               if(barcode.type=="QR_CODE" && !this.state.scanned){
-                this.writeToClipboard(barcode.data);
+                this.writeToClipboard(barcode.data, navigation);
               }
             })
           }}
@@ -61,7 +65,7 @@ export default class Camera extends Component {
       </View>
     );
   }
-  writeToClipboard = async (text) => {
+  writeToClipboard = async (text, navigation) => {
     await Clipboard.setString(text);
     this.setState({scanned:true});
     Alert.alert(
@@ -73,8 +77,17 @@ export default class Camera extends Component {
           onPress: () => {
             this.setState({scanned:false});
           }
+        },
+        {
+          text: "to the other side",
+          onPress: () => {
+            
+            {navigation.navigate('Webview', {text})}
+            this.setState({scanned:false});
+          }
         }
       ],
+
       { cancelable: false }
     );
   };

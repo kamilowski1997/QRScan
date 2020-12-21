@@ -44,10 +44,11 @@ export default class GeneratorScreen extends Component {
     if(this.state.QRdata!=null&&this.state.QRdata.length>0){
       return (
         <View
-          style={{
-          //flex: 1,
+        style={{
+          flex: 1,
           //justifyContent: "space-between",
           //alignItems: "center",
+          margin: 5
         }}>
           <TextInput 
             onChangeText={(QRdata) => {
@@ -64,13 +65,13 @@ export default class GeneratorScreen extends Component {
 
           <View >
 
-            <Button mode='contained' onPress={this.saveQrToDisk}>
+            <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 15}}>
               Save to Gallery
             </Button>
               
           </View>
       
-          <View>
+          <View style={{alignItems: "center", margin: 5}}>
             <QRCode
             value={this.state.QRdata}
             size={250}
@@ -82,23 +83,29 @@ export default class GeneratorScreen extends Component {
     
     }else{
         return(
-        <View>
+        <View style={{
+          flex: 1,
+          //justifyContent: "space-between",
+          //alignItems: "center",
+        }}>
           <TextInput 
           onChangeText={(QRdata) => {
             this.setState({QRdata})}}
             mode='outlined' label="qr"
+            style={{margin: 5}}
           
         />
         <TextInput 
           onChangeText={(fileName) => {
             this.setState({fileName})} }
             mode='outlined' label="file name"
+            style={{margin: 5}}
           
         />
 
         <View >
 
-          <Button mode='contained' onPress={this.saveQrToDisk}>
+          <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 7}}>
             Save to Gallery
           </Button>
             

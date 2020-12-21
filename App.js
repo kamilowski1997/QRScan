@@ -10,6 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './HomeScreen/HomeScreen'
 import Camera from './Camera/Camera';
 import GeneratorScreen from './GeneratorScreen/GeneratorScreen';
+import WebViewThatOpensLinksInNavigator from './webview/webview'
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ const App = () => {
           />
           <Stack.Screen name="Camera" component={Camera} />
           <Stack.Screen name="GeneratorScreen" component={GeneratorScreen} />
+          <Stack.Screen name="Webview" component={WebViewThatOpensLinksInNavigator} />
         </Stack.Navigator>
       </PaperProvider>
     </NavigationContainer>
