@@ -2,7 +2,7 @@ import React, {Component, useRef} from 'react';
 import { TextInput, Button } from 'react-native-paper';
 import { StyleSheet, View, SafeAreaView, Text, Alert, TouchableOpacity, ToastAndroid, PermissionsAndroid } from 'react-native';
 import CameraRoll from "@react-native-community/cameraroll";
-
+import Share from 'react-native-share';
 
 
 import QRCode from 'react-native-qrcode-svg';
@@ -35,6 +35,22 @@ export default class GeneratorScreen extends Component {
               ToastAndroid.show('Saved to gallery !!', ToastAndroid.SHORT)
             })
         })
+      }
+    }
+  };
+  shareQR = () =>{
+    if(this.state.fileName==null){
+      ToastAndroid.show('Name your file.', ToastAndroid.SHORT)
+    }else{
+      if(this.svg!=undefined){
+        this.svg.toDataURL((dataURL)=>{
+          let shareImageBase64 = {
+            title: 'Share',
+            url: `data:image/png;base64,${dataURL}`,
+            subject: this.state.fileName,
+          };
+          Share.open(shareImageBase64).catch(error => console.log(error));
+        });
       }
     }
   };
@@ -92,6 +108,13 @@ export default class GeneratorScreen extends Component {
 
           <Button mode='contained' onPress={this.saveQrToDisk} style={{margin: 15}}>
             Save to Gallery
+          </Button>
+            
+        </View>
+        <View >
+
+          <Button mode='contained' onPress={this.shareQR} style={{margin: 15}}>
+            Share
           </Button>
             
         </View>
