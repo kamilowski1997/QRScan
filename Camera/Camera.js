@@ -37,7 +37,7 @@ export default class Camera extends Component {
     return (
       <View style={{flex: 1, flexDirection: 'column', backgroundColor: 'black',}}>
         <RNCamera
-          onTap={this.changeCameraType}
+          onTap={this.flashOnTap}
           ref={ref => {
             this.camera = ref;
           }}
@@ -53,25 +53,31 @@ export default class Camera extends Component {
             buttonNegative: 'Cancel',
           }}
           onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            barcodes.forEach(barcode =>{
-              if(barcode.type=="QR_CODE" && !this.state.scanned){
-                this.saveToHistory(barcode.data);
-                this.codeDetected(barcode.data, navigation);
-
+            if(!this.state.scanned){
+              let arr =[];
+              barcodes.forEach(barcode =>{
+                if(barcode.type=="QR_CODE"){
+                  arr.push(barcode)
+                }
+              })
+              if(arr[0]!=undefined){
+                this.setState({scanned:true});
+                this.codeDetected(arr[0].data, navigation);
+                this.saveToHistory(arr[0].data);
               }
-            })
+               
+            }
           }}
         />
-        
       </View>
     );
   }
   codeDetected = async (qrData, navigation) => {
-    this.setState({scanned:true});
+    
     Alert.alert(
       "Alert",
       `QR code data: ${qrData}`,
-     
+
       [
         {
           text: "Save to Clipboard",
@@ -105,11 +111,9 @@ export default class Camera extends Component {
     let key = new Date().toLocaleString();
     try{
         await AsyncStorage.setItem(key, JSON.stringify(qrData))
-        //alert('Card added')
 
     }catch (e){
         console.log(e)
     }
- 
   }
 }

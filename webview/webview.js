@@ -11,13 +11,13 @@ export default class WebViewThatOpensLinksInNavigator extends Component {
   }
   render() {
     const { navigation, route } = this.props;
-    const { text} = route.params;
+    const { qrData} = route.params;
     return (
       <WebView
         ref={(ref) => { this.webview = ref; }}
-        source={{ uri: text }}
+        source={{ uri: qrData }}
         onNavigationStateChange={(event) => {
-          if (event.url !== text) {
+          if (event.url !== qrData) {
             this.webview.stopLoading();
             Linking.openURL(event.url);
           }

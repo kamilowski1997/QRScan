@@ -1,81 +1,82 @@
 import React from 'react'
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native'
+import {StyleSheet, View, ToastAndroid, Dimensions} from 'react-native'
 import { ReloadInstructions } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import {  Button, Card, Divider } from 'react-native-paper';
+import {  Divider, Caption, Subheading, IconButton } from 'react-native-paper';
+import Clipboard from '@react-native-community/clipboard';
 
 
 
 export default class HistoryItem extends React.Component {
+    mounted;
     state = {
-        uri: " " 
-    
-       
+        uri:""   
     }
     constructor(props){
         super(props)
-        this.state = {isShown: false}
-        //this.state = {key : this.props.cow}
-        this.handleRevealClick = this.handleRevealClick.bind(this);
-        this.handleHideClick = this.handleHideClick.bind(this);
         this._retrieveData = this._retrieveData.bind(this);
       
     }
+    componentDidMount(){
+        this.mounted=true;
+        this._retrieveData();
+    }
 
+    componentWillUnmount(){
+        this.mounted=false;
+    }
     _retrieveData = async () => {
-        //console.log(this.props.cow + "receiver")
-        try {
-          const value = await AsyncStorage.getItem(JSON.parse(this.props.cow));
-          if (value !== null) {
-            // We have data!!
-            //console.log('heelo form reciever huje jidsajoiaufuadhashdouahisahd')
-            let parsed = JSON.parse(value)
-            //console.log(parsed)
-            this.setState({uri: parsed})
-
-
-            
-          }
-        } catch (error) {
-          // Error retrieving data
-          console.log(error)
-
-        }
-      };
-
-    
-   
-
-    handleRevealClick(){
-        this.setState({isShown: true})
-    }
-
-    handleHideClick(){
-        this.setState({isShown: false})
-    }
-
-    
+        
+            try {
+                const value = await AsyncStorage.getItem(JSON.parse(this.props.cow));
+                if (value !== null) {
+                  // We have data!!                  
+                  let parsed = JSON.parse(value)
+                  if(this.mounted){
+                    this.setState({uri: parsed})
+                  }
+      
+                  
+                }
+              } catch (error) {
+                // Error retrieving data
+                console.log(error)
+      
+            }        
+    };  
 
     
     render(){
-        this._retrieveData()
+       
 
         //console.log(this.props.cow)
         //console.log(this.state.answer)
-        
+        tmp = this.state.uri;
         return(
+            
 
             <View style= {styles.container}>
-                <Text>
-                    {this.state.uri}
-                    
-                </Text>
-                <Text>
-                    {this.props.cow}
-                </Text>
-                                
-                
+                <View style={{flexDirection: 'column'}}>
+                    <Subheading style={{maxWidth:Dimensions.get('window').width*8/10}}>
+                        {tmp}
+                    </Subheading>
+                    <Caption>
+                        {this.props.cow}
+                    </Caption>     
+                </View>
+                <View>
+                    <IconButton
+                        icon="content-copy"                        
+                        size={30}
+                        style={{maxWidth:Dimensions.get('window').width*2/10}}
+                        onPress={async () => {
+                            await Clipboard.setString(this.state.uri);
+                            ToastAndroid.show(`Copied "${this.state.uri}" to clipboard`, ToastAndroid.SHORT);
+                        }}
+                    />   
+                </View>
+                                      
             </View>
         ) 
     }
@@ -85,18 +86,21 @@ export default class HistoryItem extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1, 
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center', 
         backgroundColor: '#DCDCDC',
-        maxHeight: 50,
-        margin: 5
+        margin: 5,
+        flexDirection: 'row',
+
     }
 })
 
-const Answer = (bool) =>{
-    if(bool = false){
-        return 'Click me to reveal'
-    }
 
-    
-}
+
+/*                  <IconButton
+icon="camera"
+                        
+size={20}
+onPress={() => console.log('Pressed')}
+/> 
+*/
